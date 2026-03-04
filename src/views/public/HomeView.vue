@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useCitiesQuery } from '@/composables/useCities'
+import { useCityQuery } from '@/composables/useCity'
 import { toRaw, watch } from 'vue'
 
-const { data: cities, isLoading } = useCitiesQuery()
+const { data: cities, isLoading } = useCityQuery()
 const stores = [
   { id: 1, name: 'Techland' },
   { id: 2, name: 'Star-Tech' },

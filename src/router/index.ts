@@ -49,16 +49,15 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const token = await cookieStore.get('token')
   if (to.meta.private && !token) {
-    return next({ name: 'login' })
+    return { name: 'login' }
   }
 
   if (token && ['login', 'register'].includes(to.name as string)) {
-    return next({ name: 'home' })
+    return { name: 'home' }
   }
-  next()
 })
 
 export default router
