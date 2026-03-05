@@ -1,4 +1,5 @@
 import MainLayout from '@/layouts/MainLayout.vue'
+import { useAuthStore } from '@/stores/auth'
 import AdminPanelView from '@/views/AdminPanelView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
@@ -50,7 +51,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  const token = await cookieStore.get('token')
+  const authStore = useAuthStore()
+  const token = authStore.access_token
+
+  console.log(authStore.auth, 'auth')
   if (to.meta.private && !token) {
     return { name: 'login' }
   }

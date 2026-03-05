@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLoginMutation } from '@/composables/useAuth'
+import type { ErrorResponse } from '@/interfaces'
+import type { Login } from '@/interfaces/auth'
 import { loginSchema } from '@/schemas/auth.schema'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
@@ -10,11 +13,23 @@ const { defineField, errors, handleSubmit } = useForm({
   validationSchema: schema,
 })
 
+const { mutateAsync: loginAsync } = useLoginMutation()
+
 const [email, emailProps] = defineField('email')
 const [password, passwordProps] = defineField('password')
 
-const onSubmit = handleSubmit((values) => {
-  console.log('Form Data:', values.email, values.password)
+const onSubmit = handleSubmit(async (values) => {
+  const payload: Login = {
+    email: values.email,
+    password: values.password,
+  }
+
+  try {
+    await loginAsync(payload)
+  } catch (error) {
+    const errorResonse = error as ErrorResponse
+    alert(errorResonse.response.data.detail)
+  }
 })
 </script>
 

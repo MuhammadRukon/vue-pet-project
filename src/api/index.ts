@@ -12,7 +12,7 @@ export const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use((config) => {
   if (config.private) {
-    const token = cookieStore.get('token')
+    const token = cookieStore.get('token') //TODO:get token from pinia store
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
