@@ -10,3 +10,8 @@ export async function addCity(payload: { name: string }) {
   const { data } = await axiosClient.post('/admin/cities', payload)
   return data
 }
+
+export async function deleteCity(id: string) {
+  const { data } = await axiosClient.delete(`/admin/cities/${id}`)
+  return data
+}

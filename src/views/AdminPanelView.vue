@@ -1,16 +1,33 @@
 <script setup lang="ts">
-import { useCreateCityMutation } from '@/composables/useCity.ts'
+import {
+  useCityQuery,
+  useCreateCityMutation,
+  useDeleteCityMutation,
+} from '@/composables/useCity.ts'
+import { QueryKey } from '@/enums'
+import { IconTrash } from '@tabler/icons-vue'
+import { useQueryClient } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
 const city = ref('')
-const { mutate: addCity } = useCreateCityMutation()
+const { mutateAsync: addCityAsync } = useCreateCityMutation()
+const { mutateAsync: deleteCityAsync } = useDeleteCityMutation()
+const { data: cities } = useCityQuery()
+const queryClient = useQueryClient()
 
 watch(city, (newVal, oldVal) => {
   console.log(newVal)
 })
 
-async function handleClick() {
-  addCity({ name: city.value })
+async function handleAdd() {
+  await addCityAsync({ name: city.value })
+  city.value = ''
+  queryClient.invalidateQueries({ queryKey: [QueryKey.Cities] })
+}
+
+async function handleDelete(id: string) {
+  await deleteCityAsync(id)
+  queryClient.invalidateQueries({ queryKey: [QueryKey.Cities] })
 }
 </script>
 
@@ -28,7 +45,7 @@ async function handleClick() {
 
     <button
       :disabled="!city.length"
-      @click="handleClick"
+      @click="handleAdd"
       :class="[
         'w-fit rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white',
         !city.length
@@ -38,5 +55,32 @@ async function handleClick() {
     >
       + Add
     </button>
+  </div>
+
+  <div class="mt-4">
+    <table class="w-full text-left text-sm border-collapse">
+      <thead class="bg-gray-100 text-xs uppercase text-gray-700">
+        <tr class="*:px-4 *:py-3 *:border-b">
+          <th>no</th>
+          <th>city name</th>
+          <th class="text-right">actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr
+          v-for="(c, index) in cities"
+          class="hover:bg-gray-100 transition-colors *:px-4 *:py-4"
+          :key="c.id"
+        >
+          <td>{{ index + 1 }}</td>
+          <td class="font-medium text-gray-900">{{ c.name }}</td>
+          <td class="text-right">
+            <button @:click="() => handleDelete(String(c.id))" class="text-red-600 cursor-pointer">
+              <IconTrash size="18" />
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
