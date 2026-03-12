@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { LoginResponse } from '@/interfaces/auth'
+import { axiosClient } from '@/api'
 
 export const useAuthStore = defineStore('auth', () => {
   const auth = ref<LoginResponse | null>(null)
@@ -11,7 +12,8 @@ export const useAuthStore = defineStore('auth', () => {
     auth.value = payload
   }
 
-  function clearAuth() {
+  async function clearAuth() {
+    await axiosClient.post('/auth/logout')
     auth.value = null
   }
 

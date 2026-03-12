@@ -1,10 +1,13 @@
 import { axiosClient } from '@/api'
-import type { City } from '@/interfaces/city'
+import type { City, CityAdmin } from '@/interfaces/city'
 
-export async function getAllCities(): Promise<City[]> {
-  const { data } = await axiosClient('/cities')
+async function fetchCities<T>(endpoint: string, isPrivate: boolean): Promise<T[]> {
+  const { data } = await axiosClient(endpoint, { private: isPrivate })
   return data
 }
+
+export const getAllCities = () => fetchCities<City>('/cities', false)
+export const getAllCitiesAdmin = () => fetchCities<CityAdmin>('/admin/cities', true)
 
 export async function addCity(payload: { name: string }) {
   const { data } = await axiosClient.post('/admin/cities', payload)

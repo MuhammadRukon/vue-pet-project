@@ -1,12 +1,21 @@
 import { QueryKey } from '@/enums'
-import type { City } from '@/interfaces/city'
-import { addCity, deleteCity, getAllCities } from '@/services/city.service'
+import type { City, CityAdmin } from '@/interfaces/city'
+import { addCity, deleteCity, getAllCities, getAllCitiesAdmin } from '@/services/city.service'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 
 export function useCityQuery() {
   return useQuery<City[]>({
-    queryKey: [QueryKey.Cities],
-    queryFn: () => getAllCities(),
+    queryKey: [QueryKey.Cities, 'public'],
+    queryFn: getAllCities,
+    staleTime: 1000 * 60 * 10,
+  })
+}
+
+export function useAdminCityQuery() {
+  return useQuery<CityAdmin[]>({
+    queryKey: [QueryKey.Cities, 'admin'],
+    queryFn: getAllCitiesAdmin,
+    staleTime: 0,
   })
 }
 

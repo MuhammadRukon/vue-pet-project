@@ -1,28 +1,33 @@
 <script setup lang="ts">
 import {
-  useCityQuery,
+  useAdminCityQuery,
   useCreateCityMutation,
   useDeleteCityMutation,
 } from '@/composables/useCity.ts'
 import { QueryKey } from '@/enums'
-import { IconTrash } from '@tabler/icons-vue'
+import { formatDate } from '@/lib'
+import { IconEdit, IconTrash } from '@tabler/icons-vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import { ref, watch } from 'vue'
 
 const city = ref('')
 const { mutateAsync: addCityAsync } = useCreateCityMutation()
 const { mutateAsync: deleteCityAsync } = useDeleteCityMutation()
-const { data: cities } = useCityQuery()
+const { data: cities } = useAdminCityQuery()
 const queryClient = useQueryClient()
 
-watch(city, (newVal, oldVal) => {
-  console.log(newVal)
+watch(cities, (newVal) => {
+  console.log(newVal, 'newval')
 })
 
 async function handleAdd() {
   await addCityAsync({ name: city.value })
   city.value = ''
   queryClient.invalidateQueries({ queryKey: [QueryKey.Cities] })
+}
+
+async function handleEdit(id: string) {
+  alert(`edit will be implemented soon ${id}`)
 }
 
 async function handleDelete(id: string) {
@@ -63,6 +68,9 @@ async function handleDelete(id: string) {
         <tr class="*:px-4 *:py-3 *:border-b">
           <th>no</th>
           <th>city name</th>
+          <th>created at</th>
+          <th>updated at</th>
+          <th>status</th>
           <th class="text-right">actions</th>
         </tr>
       </thead>
@@ -74,7 +82,17 @@ async function handleDelete(id: string) {
         >
           <td>{{ index + 1 }}</td>
           <td class="font-medium text-gray-900">{{ c.name }}</td>
-          <td class="text-right">
+          <td class="font-medium text-gray-900">
+            {{ formatDate(c.updated_at) }}
+          </td>
+          <td class="font-medium text-gray-900">
+            {{ formatDate(c.updated_at) }}
+          </td>
+          <td class="font-medium text-gray-900">{{ c.is_active ? 'Active' : 'Inactive' }}</td>
+          <td class="text-right flex items-center gap-2 justify-end">
+            <button @:click="() => handleEdit(String(c.id))" class="text-blue-600 cursor-pointer">
+              <IconEdit size="18" />
+            </button>
             <button @:click="() => handleDelete(String(c.id))" class="text-red-600 cursor-pointer">
               <IconTrash size="18" />
             </button>

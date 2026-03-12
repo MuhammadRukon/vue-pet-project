@@ -1,4 +1,5 @@
 import { BASE_URL } from '@/constants'
+import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 
 export const axiosClient = axios.create({
@@ -12,7 +13,8 @@ export const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use((config) => {
   if (config.private) {
-    const token = cookieStore.get('token') //TODO:get token from pinia store
+    const token = useAuthStore().auth?.access_token ?? ''
+    console.log(token, 'token')
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
